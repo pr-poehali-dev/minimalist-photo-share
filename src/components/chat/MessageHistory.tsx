@@ -5,38 +5,33 @@ import ChatMessage from "@/components/ChatMessage";
 import { Message } from "@/types/chat";
 
 interface MessageHistoryProps {
-  messages?: Message[];
+  messages: Message[];
 }
 
 const MessageHistory = ({ messages }: MessageHistoryProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Автоматическая прокрутка к последнему сообщению
+  // Прокрутка к последнему сообщению при изменении истории сообщений
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   return (
-    <ScrollArea className="flex-1 p-4">
+    <ScrollArea className="flex-1 p-4 overflow-y-auto">
       <div className="space-y-4">
-        {messages && messages.length > 0 ? (
-          <>
-            {messages.map(msg => (
-              <ChatMessage
-                key={msg.id}
-                content={msg.content}
-                timestamp={msg.timestamp}
-                isCurrentUser={msg.isCurrentUser}
-                sender={!msg.isCurrentUser ? msg.sender : undefined}
-              />
-            ))}
-            <div ref={messagesEndRef} />
-          </>
-        ) : (
-          <div className="flex h-full min-h-[300px] items-center justify-center text-muted-foreground">
-            Начните общение прямо сейчас!
-          </div>
-        )}
+        {messages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            text={message.text}
+            time={message.time}
+            isMe={message.isMe}
+            status={message.status}
+            attachment={message.attachment}
+          />
+        ))}
+        <div ref={messagesEndRef} />
       </div>
     </ScrollArea>
   );
