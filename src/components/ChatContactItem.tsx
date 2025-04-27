@@ -1,15 +1,16 @@
 
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface ChatContactItemProps {
   name: string;
   avatar: string;
-  lastMessage: string;
-  time: string;
+  lastMessage?: string;
+  time?: string;
   unread?: number;
-  isActive?: boolean;
-  onClick?: () => void;
+  isActive: boolean;
+  onClick: () => void;
+  isOnline?: boolean;
 }
 
 const ChatContactItem = ({
@@ -17,9 +18,10 @@ const ChatContactItem = ({
   avatar,
   lastMessage,
   time,
-  unread = 0,
-  isActive = false,
-  onClick
+  unread,
+  isActive,
+  onClick,
+  isOnline = false
 }: ChatContactItemProps) => {
   const initials = name
     .split(" ")
@@ -28,28 +30,35 @@ const ChatContactItem = ({
     .toUpperCase();
 
   return (
-    <div 
+    <div
       className={cn(
-        "flex items-center p-3 rounded-lg cursor-pointer hover:bg-muted transition-colors",
-        isActive && "bg-muted"
+        "flex items-center gap-3 p-3 cursor-pointer hover:bg-accent/50 transition-colors",
+        isActive && "bg-accent"
       )}
       onClick={onClick}
     >
-      <Avatar className="h-10 w-10 mr-3">
-        <AvatarImage src={avatar} alt={name} />
-        <AvatarFallback>{initials}</AvatarFallback>
-      </Avatar>
-      
+      <div className="relative">
+        <Avatar>
+          <AvatarImage src={avatar} alt={name} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+        {isOnline && (
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background"></span>
+        )}
+      </div>
+
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-center">
-          <p className="font-medium truncate">{name}</p>
-          <span className="text-xs text-muted-foreground">{time}</span>
+          <span className="font-medium truncate">{name}</span>
+          {time && <span className="text-xs text-muted-foreground">{time}</span>}
         </div>
         
-        <div className="flex justify-between items-center">
-          <p className="text-sm text-muted-foreground truncate">{lastMessage}</p>
-          {unread > 0 && (
-            <span className="ml-2 bg-primary text-primary-foreground text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+        <div className="flex justify-between items-center mt-1">
+          {lastMessage && (
+            <p className="text-sm text-muted-foreground truncate">{lastMessage}</p>
+          )}
+          {unread && unread > 0 && (
+            <span className="ml-2 flex-shrink-0 h-5 min-w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
               {unread}
             </span>
           )}
